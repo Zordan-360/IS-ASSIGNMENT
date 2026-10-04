@@ -1,0 +1,182 @@
+@config "../tailwind.config.js";
+@import "tailwindcss";
+/* ============================================================
+   Design tokens
+   ============================================================ */
+:root {
+  --font-sans: "Inter", "Inter Tight", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ink: #07080a;
+  --bone: #f2f1ed;
+  --muted: #868c97;
+  --fizz: #cbff4d;
+  --hairline: rgba(242, 241, 237, 0.09);
+}
+
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    /* The pinned hero owns the vertical scroll; keep horizontal locked down. */
+    overflow-x: hidden;
+    scroll-behavior: auto;
+  }
+
+  body {
+    @apply bg-ink text-bone font-sans antialiased;
+    overflow-x: hidden;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--fizz);
+    color: #07080a;
+  }
+
+  /* Slim, unobtrusive scrollbar (WebKit + Firefox) */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #07080a;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1d2128;
+    border-radius: 99px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #2a303a;
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #1d2128 #07080a;
+  }
+
+  :focus-visible {
+    outline: 1px solid var(--fizz);
+    outline-offset: 3px;
+  }
+}
+
+/* ============================================================
+   Component-level helper classes (kept tiny on purpose)
+   ============================================================ */
+@layer components {
+  /* Pinned hero stage height — svh with a vh fallback for older browsers */
+  .stage-h {
+    height: 100vh;
+    height: 100svh;
+    min-height: 600px;
+  }
+
+  /* Faint technical grid used as environmental depth */
+  .env-grid {
+    background-image: linear-gradient(to right, var(--hairline) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--hairline) 1px, transparent 1px);
+    background-size: 88px 88px;
+    background-position: center center;
+    -webkit-mask-image: radial-gradient(ellipse 80% 65% at 50% 45%, #000 30%, transparent 100%);
+    mask-image: radial-gradient(ellipse 80% 65% at 50% 45%, #000 30%, transparent 100%);
+  }
+
+  .hairline-t {
+    border-top: 1px solid var(--hairline);
+  }
+  .hairline-b {
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .eyebrow {
+    @apply text-[10px] uppercase tracking-[0.34em] text-muted sm:text-[11px];
+  }
+
+  .num {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+
+  /* Scroll cue: a short dash travelling down a hairline */
+  .cue-dot {
+    animation: cue-travel 2.1s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(14px, -26px, 0);
+  }
+}
+
+@keyframes cue-travel {
+  0% {
+    transform: translateY(-100%);
+  }
+  60%,
+  100% {
+    transform: translateY(250%);
+  }
+}
+
+/* Short viewports (small laptops, landscape phones): compress the scale so the
+   full hero — headline, vehicle and metrics — still fits inside one screen. */
+@media (max-height: 720px) and (min-width: 768px) {
+  .stage-h {
+    min-height: 520px;
+  }
+}
+
+@layer utilities {
+  .will-transform {
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  .text-shadow-soft {
+    text-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+  }
+}
+
+/* ============================================================
+   Pre-intro state
+
+   Applied only under `.js` (set by an inline script in <head>), so the first
+   paint already matches what GSAP is about to animate from — and no-JS or
+   failed-JS visitors still get the finished, readable hero.
+   ============================================================ */
+.js [data-char],
+.js [data-hero-sub],
+.js [data-stat-value],
+.js [data-stat-label],
+.js [data-hero-caption],
+.js [data-visual-car],
+.js [data-visual-glow],
+.js [data-visual-shadow],
+.js [data-visual-ring],
+.js [data-visual-ring-2],
+.js [data-visual-streaks],
+.js [data-rail],
+.js [data-scroll-cue] {
+  opacity: 0;
+}
+
+.js [data-stat-rule] {
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+/* ============================================================
+   Reduced motion: strip decorative CSS motion, keep layout intact
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
